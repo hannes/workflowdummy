@@ -1,0 +1,36 @@
+on:
+  workflow_dispatch:
+    inputs:
+      extension_name:
+        description: 'Extension name (e.g. postgres_scanner)'
+        required: true 
+        type: string
+      extension_repo:
+        description: 'Extension git repo (e.g. https://github.com/duckdblabs/postgres_scanner)'
+        required: true 
+        type: string
+      extension_version:
+        description: 'Extension version (e.g. a commit hash or a tag)'
+        required: true 
+        type: string
+      duckdb_version:
+        description: 'DuckDB version (e.g. a commit hash or a tag)'
+        required: true 
+        type: string
+
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true 
+
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clone
+        run: |
+          git clone https://github.com/duckdb/duckdb.git duckdb
+          (cd duckdb && git checkout ${{ inputs.duckdb_version }} )
+          git clone ${{ inputs.extension_repo }} extension
+          (cd extension && git checkout ${{ inputs.extension_version }} )
+          
